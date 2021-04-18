@@ -30,15 +30,14 @@ print("Gold Dataframe :\n", goldDf.head(), dataSeperator)
 cryptoDf = pd.read_csv(r'C:\Users\CianMurray\Documents\UCDPA_CianMurray_Datasets\coin_Bitcoin.csv')
 print("Bitcoin Dataframe :\n", cryptoDf.head(), dataSeperator)
 
-
-# Section 1 Data Cleanup of goldDf
+# The cryptoDf data frame has considerable more information than the goldDf, Cleanup is required
 
 
 # Inspect the dataframe
 print(goldDf.info())
 print(goldDf.shape)
 print(goldDf.describe())
-print(goldDf.columns,dataSeperator)
+print(goldDf.columns, dataSeperator)
 
 # Change the date to European Format
 goldDf["Date"] = pd.to_datetime(goldDf["Date"]).dt.strftime('%d-%m-%Y')
@@ -59,9 +58,17 @@ print("Gold Standard deviation: ", goldDf["Price"].std(), dataSeperator)
 
 
 # Check for any Null Values in the Data
-nullValues2 = 0
+
 nullValues = goldDf.isna().sum().sum()
-print("There are: ", nullValues, " Null values in the Dataset", dataSeperator)
+print("There are: ", nullValues, " Null values in the Gold Dataset", dataSeperator)
+nullValues2 = cryptoDf.isna().sum().sum()
+print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSeperator)
+
+# Create a Function to check dataframes easily for  null values
+def nans(df):return df[df.isna().any(axis=1)]
+# look at our null values
+print(nans(cryptoDf))
+
 
 
 # In commodity Trading we refer to the closing price as the settlement price for several reasons.
@@ -70,17 +77,15 @@ goldDf.rename(columns={'Price': 'Settlement'}, inplace=True)
 print(goldDf.head(), dataSeperator)
 
 
-# Section 2 Data Cleanup of cryptoDf
-
 # Inspect the dataframe
 print(cryptoDf.info())
 print(cryptoDf.shape)
 print(cryptoDf.describe())
 print(cryptoDf.columns,dataSeperator)
 
-nullValues2 = 0
-nullValues = goldDf.isna().sum().sum()
-print("There are: ", nullValues, " Null values in the Dataset", dataSeperator)
+
+nullValues2 = cryptoDf.isna().sum().sum()
+print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSeperator)
 
 
 # Rename Closing price to Settlement
@@ -92,52 +97,85 @@ cryptoDf["Date"] = pd.to_datetime(cryptoDf["Date"]).dt.strftime('%d-%m-%Y')
 goldDf["Date"] = pd.to_datetime(goldDf["Date"]).dt.strftime('%d-%m-%Y')
 goldDf['Date'] = pd.to_datetime(goldDf.Date)
 cryptoDf["Date"] = pd.to_datetime(cryptoDf.Date)
-print(cryptoDf.head(), dataSeperator)
 
 # Check that our dates are now in the right format
 print("The Bitcoin Date Column is of Datatype: ", cryptoDf["Date"].dtype)
 print("The Gold Date Column is of Datatype: ", goldDf["Date"].dtype, dataSeperator)
 
-# We need to ascertain what our date ranges are for each dataset
+# We need to ascertain what our date ranges are for each dataset and have a look at max prices
 goldMinD = goldDf["Date"].min()
 goldMaxD = goldDf["Date"].max()
 bitCoinMinD = cryptoDf["Date"].min()
 bitCoinMaxD = cryptoDf["Date"].max()
-print("Gold Minimum Date: ",goldMinD," Bitcoin Minimum Date: ",bitCoinMinD )
-print("Gold Maximum Date: ",goldMaxD," Bitcoin Maximum Date: ",bitCoinMaxD, dataSeperator )
+goldMaxPrice = goldDf["Settlement"].max()
+bitcoinMaxPrice = cryptoDf["Settlement"].max()
+print("Gold Minimum Date: ", goldMinD, " Bitcoin Minimum Date: ", bitCoinMinD," Gold Max Price: ", goldMaxPrice)
+print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD," Bitcoin Max Price", bitcoinMaxPrice,
+      dataSeperator)
 
 
 # Join our two dataframes with an inner join Date will be our PK
 goldBitcoin = goldDf.merge(cryptoDf,on="Date")
 
 # Remove columns that are not needed
-goldBitcoin = goldBitcoin.drop(labels=["Open","High","Low","Adj Close","Volume"], axis=1,)
+goldBitcoin = goldBitcoin.drop(labels=["Open", "High", "Low", "Adj Close", "Volume"], axis=1,)
 # Rename columns
-goldBitcoin.rename(columns={"Name_x" : "Commodity","Settlement_x" : "Gold Settled Price", "Name_y":"Cryptocurrency","Settlement_y":"Bitcoin Settled Price" }, inplace=True)
+goldBitcoin.rename(columns={"Name_x": "Commodity", "Settlement_x": "Gold Settled Price", "Name_y": "Cryptocurrency",
+                            "Settlement_y": "Bitcoin Settled Price"}, inplace=True)
 # Rearrange the columns
-goldBitcoin = goldBitcoin[["Date","Commodity","Gold Settled Price","Cryptocurrency","Bitcoin Settled Price"]]
+goldBitcoin = goldBitcoin[["Date", "Commodity", "Gold Settled Price", "Cryptocurrency", "Bitcoin Settled Price"]]
+# Sort Df to make sure dates are consecutive with ascending = True
+goldBitcoin = goldBitcoin.sort_values("Date",ascending=True)
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    print(goldBitcoin, dataSeperator)
 
-print(goldBitcoin.head(10),dataSeperator)
+nullValues3 = goldBitcoin.isna().sum().sum()
+print("There are: ", nullValues3, " Null values in the Gold/Bitcoin Dataset", dataSeperator)
 
-#Look at our data using some basic plots
+#  First I wish to look at price volatility over the last 2 years
+goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
+rangeMask = (goldBitcoin["Date"] > "2018-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
+print(goldBitcoin.loc[rangeMask])
+
+#  Secondly I wish to look at price volatility over the last 5 years
+goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
+rangeMask = (goldBitcoin["Date"] > "2016-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
+print(goldBitcoin.loc[rangeMask])
+
+# Variables used for plotting
+date = goldBitcoin["Date"]
+gSp = goldBitcoin["Gold Settled Price"]
+btcSp = goldBitcoin["Bitcoin Settled Price"]
+
+# # Gold  Plot
+# plt.plot(date,gSp,color="black", linestyle="--", label="Gold")
+# plt.xlabel("Date")
+# # Bitcoin  Plot
+# plt.plot(date,btcSp,color="orange", linestyle="solid", label="Bitcoin")
+# plt.ylabel("Settlement Price $")
+# plt.title("Historical Bitcoin & Gold Prices",color="red")
+# plt.legend()
+# plt.show()
+
+# Analysis 1
+
+goldBitcoin.insert(5, "Percentage change %","")
+print(goldBitcoin.head(),dataSeperator)
+
+
+# Delete row at index position 79
 
 
 
 
 
 
+# What date did bitcoin overtake gold
 
-# Section  3:
-# Create new Lists for analysis between Bitcoin and Gold with the columns we require.
+# What was Bitcoins start date
+#July 2010, bitcoin began trading with a value of US$.0008
+
+# how many days did it take bitcoin to overtake gold
 
 
-#
-#
-# bitcoinList = []
-# for index, rows in cryptoDf.iterrows():
-#     newBitcoinList = [rows.Name, rows.Date, rows.Settlement]
-#     bitcoinList.append(newBitcoinList)
 
-# goldDf.sort_values("Date", ascending=True)
-# print(goldDf)
-#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
