@@ -14,13 +14,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 colour = sns.color_palette()
 
 # I created a data seperator in order to make it easier to visualise sections within the project.
 colourRed = '\033[0;31m'  # Red Seperator
 revertColour = '\033[0;30m'  # We now revert the ANSI formatting otherwise it will stay as Red throughout.
-dataSeperator = colourRed + "\n" * 3 + '*' * 113 + "\n"*3 + revertColour
-
+dataSeperator = colourRed + "\n" * 3 + '*' * 113 + "\n" * 3 + revertColour
 
 # Import our gold historical data and look at the head
 goldDf = pd.read_csv(r'C:\Users\CianMurray\Documents\UCDPA_CianMurray_Datasets\gold_monthly_csv.csv')
@@ -30,13 +30,13 @@ print("Gold Dataframe :\n", goldDf.head(), dataSeperator)
 cryptoDf = pd.read_csv(r'C:\Users\CianMurray\Documents\UCDPA_CianMurray_Datasets\coin_Bitcoin.csv')
 print("Bitcoin Dataframe :\n", cryptoDf.head(), dataSeperator)
 
-# The cryptoDf data frame has considerable more information than the goldDf, Cleanup is required
+# The cryptoDf data frame has considerable more information than the goldDf, Cleanup and alignment  is required.
 
 
 # Inspect the dataframe
-print(goldDf.info())
-print(goldDf.shape)
-print(goldDf.describe())
+print(goldDf.info(), dataSeperator)
+print(goldDf.shape, dataSeperator)
+print(goldDf.describe(), dataSeperator)
 print(goldDf.columns, dataSeperator)
 
 # Change the date to European Format
@@ -45,6 +45,7 @@ goldDf["Date"] = pd.to_datetime(goldDf["Date"]).dt.strftime('%d-%m-%Y')
 # Insert a new column that shows name of the asset we are using , in this case Gold
 goldDf.insert(0, "Name", "Gold")
 cryptoDf.insert(0, "Name", "Bitcoin")
+
 # Summary statistics for goldDf
 goldMinD = goldDf["Date"].min()
 goldMaxD = goldDf["Date"].max()
@@ -56,7 +57,6 @@ print("Gold Maximum Price: ", goldDf["Price"].max())
 print("Gold Var: ", goldDf["Price"].var())
 print("Gold Standard deviation: ", goldDf["Price"].std(), dataSeperator)
 
-
 # Check for any Null Values in the Data
 
 nullValues = goldDf.isna().sum().sum()
@@ -64,11 +64,17 @@ print("There are: ", nullValues, " Null values in the Gold Dataset", dataSeperat
 nullValues2 = cryptoDf.isna().sum().sum()
 print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSeperator)
 
-# Create a Function to check dataframes easily for  null values
-def nans(df):return df[df.isna().any(axis=1)]
-# look at our null values
-print(nans(cryptoDf))
 
+# Create a Function to check dataframes easily for  null values
+
+def null_loc(df): return df[df.isna().any(axis=1)]
+
+
+# look at our null values
+print(null_loc(cryptoDf), dataSeperator)
+# As we only have one row to delete with no data we can simply drp it.
+cryptoDf = cryptoDf.drop(labels=79, axis=0)
+print(null_loc(cryptoDf), dataSeperator)
 
 
 # In commodity Trading we refer to the closing price as the settlement price for several reasons.
@@ -76,17 +82,15 @@ print(nans(cryptoDf))
 goldDf.rename(columns={'Price': 'Settlement'}, inplace=True)
 print(goldDf.head(), dataSeperator)
 
-
-# Inspect the dataframe
+# Inspect the crypto dataframe
 print(cryptoDf.info())
 print(cryptoDf.shape)
 print(cryptoDf.describe())
-print(cryptoDf.columns,dataSeperator)
+print(cryptoDf.columns, dataSeperator)
 
-
+# Double check null values
 nullValues2 = cryptoDf.isna().sum().sum()
 print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSeperator)
-
 
 # Rename Closing price to Settlement
 cryptoDf.rename(columns={'Close': 'Settlement'}, inplace=True)
@@ -109,30 +113,34 @@ bitCoinMinD = cryptoDf["Date"].min()
 bitCoinMaxD = cryptoDf["Date"].max()
 goldMaxPrice = goldDf["Settlement"].max()
 bitcoinMaxPrice = cryptoDf["Settlement"].max()
-print("Gold Minimum Date: ", goldMinD, " Bitcoin Minimum Date: ", bitCoinMinD," Gold Max Price: ", goldMaxPrice)
-print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD," Bitcoin Max Price", bitcoinMaxPrice,
+print("Gold Minimum Date: ", goldMinD, " Bitcoin Minimum Date: ", bitCoinMinD, " Gold Max Price: ", goldMaxPrice)
+print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD, " Bitcoin Max Price", bitcoinMaxPrice,
       dataSeperator)
 
-
 # Join our two dataframes with an inner join Date will be our PK
-goldBitcoin = goldDf.merge(cryptoDf,on="Date")
+# cryptoDf date time will now aggregate from days to month.
+goldBitcoin = goldDf.merge(cryptoDf, on="Date")
 
 # Remove columns that are not needed
-goldBitcoin = goldBitcoin.drop(labels=["Open", "High", "Low", "Adj Close", "Volume"], axis=1,)
+goldBitcoin = goldBitcoin.drop(labels=["Open", "High", "Low", "Adj Close", "Volume"], axis=1, )
 # Rename columns
 goldBitcoin.rename(columns={"Name_x": "Commodity", "Settlement_x": "Gold Settled Price", "Name_y": "Cryptocurrency",
                             "Settlement_y": "Bitcoin Settled Price"}, inplace=True)
 # Rearrange the columns
 goldBitcoin = goldBitcoin[["Date", "Commodity", "Gold Settled Price", "Cryptocurrency", "Bitcoin Settled Price"]]
+
 # Sort Df to make sure dates are consecutive with ascending = True
-goldBitcoin = goldBitcoin.sort_values("Date",ascending=True)
+goldBitcoin = goldBitcoin.sort_values("Date", ascending=True)
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):
     print(goldBitcoin, dataSeperator)
 
+# Check for any null values in the Joined Dataset
 nullValues3 = goldBitcoin.isna().sum().sum()
 print("There are: ", nullValues3, " Null values in the Gold/Bitcoin Dataset", dataSeperator)
 
 #  First I wish to look at price volatility over the last 2 years
+# 2020-01-01 is the Max date range I wish to use as I am only interested in Pre covid volatility.
+
 goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2018-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
@@ -147,35 +155,36 @@ date = goldBitcoin["Date"]
 gSp = goldBitcoin["Gold Settled Price"]
 btcSp = goldBitcoin["Bitcoin Settled Price"]
 
-# # Gold  Plot
-# plt.plot(date,gSp,color="black", linestyle="--", label="Gold")
+# Gold  Plot
+# plt.plot(date, gSp, color="black", linestyle="--", label="Gold")
 # plt.xlabel("Date")
 # # Bitcoin  Plot
-# plt.plot(date,btcSp,color="orange", linestyle="solid", label="Bitcoin")
+# plt.plot(date, btcSp, color="orange", linestyle="solid", label="Bitcoin")
 # plt.ylabel("Settlement Price $")
-# plt.title("Historical Bitcoin & Gold Prices",color="red")
+# plt.title("Historical Bitcoin & Gold Prices", color="red")
 # plt.legend()
 # plt.show()
 
 # Analysis 1
 
-goldBitcoin.insert(5, "Percentage change %","")
-print(goldBitcoin.head(),dataSeperator)
+# Find the monthly Percentage change
+goldBitcoin.insert(5, "GLD % Change", "")
+goldBitcoin.insert(6, "BTC % Change", "")
+print(goldBitcoin.head(), dataSeperator)
 
 
-# Delete row at index position 79
-
-
-
-
-
-
-# What date did bitcoin overtake gold
-
-# What was Bitcoins start date
-#July 2010, bitcoin began trading with a value of US$.0008
+# # What date did bitcoin overtake gold
+# bitSp = goldBitcoin["Bitcoin Settled Price"]
+# gldSp = goldBitcoin["Gold Settled Price"]
+# for index, row in goldBitcoin.iterrows():
+#     if bitSp > gldSp:
+#         print(row)
+#
+# # bitSp = goldBitcoin["Bitcoin Settled Price"]
+# # gldSp = goldBitcoin["Gold Settled Price"]
+# # while True:
+# #     bitSp < gldSp
+# #     if bitSp < gldSp:
+# #         print("True")
 
 # how many days did it take bitcoin to overtake gold
-
-
-
