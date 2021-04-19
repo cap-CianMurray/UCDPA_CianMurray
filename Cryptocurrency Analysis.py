@@ -336,11 +336,31 @@ ether18["Date"] = pd.to_datetime(ether18["Date"])
 ether19["Date"] = pd.to_datetime(ether19["Date"])
 
 print(ether18.info(),"\n",ether19.info(),dataSeperator)
-# Join etherium dataframes
-fullEtherData= ether18.merge(ether19, on="Date")
 
-print(fullEtherData.head())
-    # join btc/gold volatility onto etherium volatility
-    # present a graph on volatility
-    # candlestick graphs on all 4 volatilities
-    # numpy
+
+# Visualise our GoldBitcoin Data in a easy to follow format like Etherium
+# I wish to look at these individually so i will separate the loop below
+print("Gold Volatility Index \n\n","_" * 30, "\n")
+for index, row in goldBitcoin.iterrows():
+    if row["GLD % Change"] < 0:
+        print("Date: \n ", row["Date"].strftime("%Y %b %d"),"\n""Gold % Change: ", "   ",
+                "\n% Change from Previous day: ",colourRed,row["GLD % Change"], revertColour,"\n")
+    elif row["GLD % Change"] >= 0:
+        print("Date: \n", row["Date"].strftime("%Y %b %d"),"\n""Gold % Change: ", "   ",
+              "\n% Change from Previous day: ", colourGreen, row["GLD % Change"], revertColour, "\n")
+print(dataSeperator)
+print("Bitcoin Volatility Index \n\n","_" * 30, "\n")
+for index, row in goldBitcoin.iterrows():
+    if row["BTC % Change"] < 0:
+        print("Date: \n ", row["Date"].strftime("%Y %b %d"),"\n""BTC % Change: ", "   ",
+                "\n% Change from Previous day: ",colourRed,row["BTC % Change"], revertColour,"\n")
+    elif row["BTC % Change"] >= 0:
+        print("Date: \n", row["Date"].strftime("%Y %b %d"),"\n""BTC % Change: ", "   ",
+              "\n% Change from Previous day: ", colourGreen, row["BTC % Change"], revertColour, "\n")
+print(dataSeperator)
+
+# Join etherium dataframes
+# join btc/gold volatility onto etherium volatility
+# present a graph on volatility
+# candlestick graphs on all 4 volatilities
+# numpy
