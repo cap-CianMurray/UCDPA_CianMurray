@@ -127,6 +127,8 @@ plt.show()
 
 # Join our two dataframes with an inner join Date will be our PK
 # cryptoDf date time will now aggregate from days to month.
+# This join will remove the out of scope Data and only keep in range data
+
 goldBitcoin = goldDf.merge(cryptoDf, on="Date")
 
 # Remove columns that are not needed
@@ -332,7 +334,7 @@ print(ether18.info(), "\n", ether19.info(), dataSeperator)
 
 # Visualise our GoldBitcoin Data in a easy to follow format like Etherium
 # I wish to look at these individually so i will separate the loop below
-# I also wish to hav an in-depth look at the entire data frame rather that the date sliced df
+# I also wish to have an in-depth look at the entire data frame rather that the date sliced df
 print(boldText, "Gold Volatility Index \n\n", "_" * 30, "\n", revertColour)
 for index, row in goldBitcoin.iterrows():
     if row["GLD % Change"] < 0:
@@ -352,8 +354,33 @@ for index, row in goldBitcoin.iterrows():
               "\n% Change from Previous day: ", colourGreen, row["BTC % Change"], revertColour, "\n")
 print(dataSeperator)
 
-# Join etherium dataframes
-# join btc/gold volatility onto etherium volatility
-# present a graph on volatility with all 3 values
+
+# Create Scatter Plots to check for Data outliers
+ether18.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2018 Outliers")
+plt.show()
+ether19.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2019 Outliers")
+plt.show()
+
+# Gold Etherium volatility 2018
+etheriumDate18 = ether18["Date"]
+etherVol18 = ether18["ETH % Change"]
+plt.plot(etheriumDate18, etherVol18, color="gold", linestyle="solid", label="Gold")
+plt.xlabel("Date")
+plt.plot(etheriumDate18, gldVol18, color="blue", linestyle="solid", label="Etherium")
+plt.ylabel("Volatility % of price")
+plt.title("Etherium Price Volatility 2018", color="red")
+plt.legend()
+plt.show()
+
+# Gold Etherium volatility 2019
+etheriumDate19 = ether19["Date"]
+etherVol19 = ether19["ETH % Change"]
+plt.plot(etheriumDate19, etherVol19, color="gold", linestyle="solid", label="Gold")
+plt.xlabel("Date")
+plt.plot(etheriumDate19, gldVol19, color="blue", linestyle="solid", label="Etherium")
+plt.ylabel("Volatility % of price")
+plt.title("Etherium Price Volatility 2019", color="red")
+plt.legend()
+plt.show()
 # candlestick graphs on all 4 volatility's
-# numpy
+
