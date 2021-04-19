@@ -17,8 +17,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-
 colour = sns.color_palette()
 
 # I created a data seperator in order to make it easier to visualise sections within the project.
@@ -123,11 +121,11 @@ print("Gold Minimum Date: ", goldMinD, " Bitcoin Minimum Date: ", bitCoinMinD, "
 print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD, " Bitcoin Max Price", bitcoinMaxPrice,
       dataSeperator)
 
-# # Create Scatter Plots to check for Data outliers
-# cryptoDf.plot(x="Date",y="Settlement", kind="scatter",title="Bitcoin Outliers")
-# plt.show()
-# goldDf.plot(x="Date",y="Settlement", kind="scatter",title="Gold Outliers")
-# plt.show()
+# Create Scatter Plots to check for Data outliers
+cryptoDf.plot(x="Date",y="Settlement", kind="scatter",title="Bitcoin Outliers")
+plt.show()
+goldDf.plot(x="Date",y="Settlement", kind="scatter",title="Gold Outliers")
+plt.show()
 
 # Join our two dataframes with an inner join Date will be our PK
 # cryptoDf date time will now aggregate from days to month.
@@ -166,15 +164,15 @@ date = goldBitcoin["Date"]
 gSp = goldBitcoin["Gold Settled Price"]
 btcSp = goldBitcoin["Bitcoin Settled Price"]
 
-# # Gold  Plot
-# plt.plot(date, gSp, color="black", linestyle="--", label="Gold")
-# plt.xlabel("Date")
-# # Bitcoin  Plot
-# plt.plot(date, btcSp, color="orange", linestyle="solid", label="Bitcoin")
-# plt.ylabel("Settlement Price $")
-# plt.title("Historical Bitcoin & Gold Prices", color="red")
-# plt.legend()
-# plt.show()
+# Gold  Plot
+plt.plot(date, gSp, color="black", linestyle="--", label="Gold")
+plt.xlabel("Date")
+# Bitcoin  Plot
+plt.plot(date, btcSp, color="orange", linestyle="solid", label="Bitcoin")
+plt.ylabel("Settlement Price $")
+plt.title("Historical Bitcoin & Gold Prices", color="red")
+plt.legend()
+plt.show()
 
 # Analysis 1
 
@@ -256,22 +254,22 @@ date18 = volatility2018["Date"]
 gldVol18 = volatility2018["Gold Volatility 2018"]
 btcVol18 = volatility2018["Bitcoin Volatility 2018"]
 
-# # 2018 plot
-# plt.plot(date18, gldVol18, color="black", linestyle="--", label="Gold")
-# plt.xlabel("Date")
-# plt.plot(date18, btcVol18, color="orange", linestyle="solid", label="Bitcoin")
-# plt.ylabel("Volatilty % of price")
-# plt.title("Gold & Bitcoin Price Volatility 2018", color="red")
-# plt.legend()
-# plt.show()
-# # 2019 Plot
-# plt.plot(date19, gldVol19, color="black", linestyle="--", label="Gold")
-# plt.xlabel("Date")
-# plt.plot(date19, btcVol19, color="orange", linestyle="solid", label="Bitcoin")
-# plt.ylabel("Volatility %  of price")
-# plt.title("Gold & Bitcoin Price Volatility 2019", color="red")
-# plt.legend()
-# plt.show()
+# 2018 plot
+plt.plot(date18, gldVol18, color="black", linestyle="--", label="Gold")
+plt.xlabel("Date")
+plt.plot(date18, btcVol18, color="orange", linestyle="solid", label="Bitcoin")
+plt.ylabel("Volatilty % of price")
+plt.title("Gold & Bitcoin Price Volatility 2018", color="red")
+plt.legend()
+plt.show()
+# 2019 Plot
+plt.plot(date19, gldVol19, color="black", linestyle="--", label="Gold")
+plt.xlabel("Date")
+plt.plot(date19, btcVol19, color="orange", linestyle="solid", label="Bitcoin")
+plt.ylabel("Volatility %  of price")
+plt.title("Gold & Bitcoin Price Volatility 2019", color="red")
+plt.legend()
+plt.show()
 
 
 # Analysis 2:
