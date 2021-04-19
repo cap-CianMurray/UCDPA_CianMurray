@@ -23,6 +23,7 @@ colour = sns.color_palette()
 colourRed = '\033[0;31m'  # Red Seperator
 colourGreen = '\033[0;32m'
 revertColour = '\033[0;30m'  # We now revert the ANSI formatting otherwise it will stay as Red throughout.
+boldText = '\033[1m'
 dataSeperator = colourRed + "\n" * 3 + '*' * 113 + "\n" * 3 + revertColour
 
 # Import our gold historical data and look at the head
@@ -338,22 +339,23 @@ print(ether18.info(),"\n",ether19.info(),dataSeperator)
 
 # Visualise our GoldBitcoin Data in a easy to follow format like Etherium
 # I wish to look at these individually so i will separate the loop below
-print("Gold Volatility Index \n\n","_" * 30, "\n")
+# I also wish to hav an indepth look at the entire data frame rather that the date sliced df
+print(boldText,"Gold Volatility Index \n\n","_" * 30, "\n",revertColour)
 for index, row in goldBitcoin.iterrows():
     if row["GLD % Change"] < 0:
-        print("Date: \n ", row["Date"].strftime("%Y %b %d"),"\n""Gold % Change: ", "   ",
+        print("Date: \n ", boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""Gold % Change: ", "   ",
                 "\n% Change from Previous day: ",colourRed,row["GLD % Change"], revertColour,"\n")
     elif row["GLD % Change"] >= 0:
-        print("Date: \n", row["Date"].strftime("%Y %b %d"),"\n""Gold % Change: ", "   ",
+        print("Date: \n",boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""Gold % Change: ", "   ",
               "\n% Change from Previous day: ", colourGreen, row["GLD % Change"], revertColour, "\n")
 print(dataSeperator)
-print("Bitcoin Volatility Index \n\n","_" * 30, "\n")
+print(boldText,"Bitcoin Volatility Index \n\n","_" * 30, "\n",revertColour)
 for index, row in goldBitcoin.iterrows():
     if row["BTC % Change"] < 0:
-        print("Date: \n ", row["Date"].strftime("%Y %b %d"),"\n""BTC % Change: ", "   ",
+        print("Date: \n ", boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""BTC % Change: ", "   ",
                 "\n% Change from Previous day: ",colourRed,row["BTC % Change"], revertColour,"\n")
     elif row["BTC % Change"] >= 0:
-        print("Date: \n", row["Date"].strftime("%Y %b %d"),"\n""BTC % Change: ", "   ",
+        print("Date: \n",boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""BTC % Change: ", "   ",
               "\n% Change from Previous day: ", colourGreen, row["BTC % Change"], revertColour, "\n")
 print(dataSeperator)
 
