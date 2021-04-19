@@ -23,6 +23,7 @@ colour = sns.color_palette()
 
 # I created a data seperator in order to make it easier to visualise sections within the project.
 colourRed = '\033[0;31m'  # Red Seperator
+colourGreen = '\033[0;32m'
 revertColour = '\033[0;30m'  # We now revert the ANSI formatting otherwise it will stay as Red throughout.
 dataSeperator = colourRed + "\n" * 3 + '*' * 113 + "\n" * 3 + revertColour
 
@@ -92,6 +93,7 @@ print(cryptoDf.shape)
 print(cryptoDf.describe())
 print(cryptoDf.columns, dataSeperator)
 
+
 # Double check null values
 nullValues2 = cryptoDf.isna().sum().sum()
 print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSeperator)
@@ -121,6 +123,12 @@ print("Gold Minimum Date: ", goldMinD, " Bitcoin Minimum Date: ", bitCoinMinD, "
 print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD, " Bitcoin Max Price", bitcoinMaxPrice,
       dataSeperator)
 
+# # Create Scatter Plots to check for Data outliers
+# cryptoDf.plot(x="Date",y="Settlement", kind="scatter",title="Bitcoin Outliers")
+# plt.show()
+# goldDf.plot(x="Date",y="Settlement", kind="scatter",title="Gold Outliers")
+# plt.show()
+
 # Join our two dataframes with an inner join Date will be our PK
 # cryptoDf date time will now aggregate from days to month.
 goldBitcoin = goldDf.merge(cryptoDf, on="Date")
@@ -144,7 +152,6 @@ print("There are: ", nullValues3, " Null values in the Gold/Bitcoin Dataset", da
 
 #  First I wish to look at price volatility over the last 2 years
 # 2020-01-01 is the Max date range I wish to use as I am only interested in Pre covid volatility.
-
 goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2018-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
@@ -297,4 +304,43 @@ ether19 = pd.DataFrame(data=etherData19, columns=columns)
 ether19 = ether19[["Date", "Name", "Etherium Settlement"]]
 
 print(ether19, dataSeperator)
+print(null_loc(ether18), dataSeperator)
+print(null_loc(ether19), dataSeperator)
 
+# Get Etherium Volatility by year
+ether18.insert(3, "ETH % Change", "")
+ether18["ETH % Change"] = \
+    (ether18["Etherium Settlement"].diff()*100)/ether18["Etherium Settlement"]\
+    .shift()
+ether18["ETH % Change"] = ether18["ETH % Change"].fillna(0)
+print(ether18, dataSeperator)
+ether19.insert(3, "ETH % Change", "")
+ether19["ETH % Change"] = \
+    (ether19["Etherium Settlement"].diff()*100)/ether19["Etherium Settlement"]\
+    .shift()
+ether19["ETH % Change"] = ether19["ETH % Change"].fillna(0)
+print(ether19, dataSeperator)
+
+# What Months have had negative change in 2019
+for index, row in ether19.iterrows():
+    if row["ETH % Change"] < 0:
+        print("Date: ",row["Date"],"\n""Settlement: ",row["Etherium Settlement"], "   ",
+                "\n% Change from Previous day: ",colourRed,row["ETH % Change"], revertColour,"\n","_" * 30, "\n")
+    elif row["ETH % Change"] >= 0:
+        print("Date: ", row["Date"], "\n""Settlement: ", row["Etherium Settlement"], "   ",
+              "\n% Change from Previous day: ", colourGreen, row["ETH % Change"], revertColour, "\n", "_" * 30, "\n")
+print(dataSeperator)
+
+print(ether18.info(),"\n",ether19.info(),dataSeperator)
+ether18["Date"] = pd.to_datetime(ether18["Date"])
+ether19["Date"] = pd.to_datetime(ether19["Date"])
+
+print(ether18.info(),"\n",ether19.info(),dataSeperator)
+# Join etherium dataframes
+fullEtherData= ether18.merge(ether19, on="Date")
+
+print(fullEtherData.head())
+    # join btc/gold volatility onto etherium volatility
+    # present a graph on volatility
+    # candlestick graphs on all 4 volatilities
+    # numpy
