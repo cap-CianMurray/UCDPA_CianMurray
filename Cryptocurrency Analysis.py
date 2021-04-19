@@ -201,13 +201,35 @@ bitCoinVolatilityMean = goldBitcoin["BTC % Change"].mean()
 # Average volatility for Gold
 goldVolatilityMean = goldBitcoin["GLD % Change"].mean()
 
-# Volatility Summary
+# Volatility Summary Overall from Df
 print("Bitcoin Max Volatility: ", bitCoinVolatility, "\nBitcoin Average Volatility : ", bitCoinVolatilityMean)
 print("Gold Max Volatility: ", goldVolatility, "\nBitcoin Average Volatility: ", goldVolatilityMean, dataSeperator)
 
+# 2018 volatility
+data18 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Change"]]
+header = ["Date","Gold Volatility 2018","Bitcoin Volatility 2018"]
+volatility2018 = pd.concat(data18,axis=1,keys=header)
+volatility2018["Date"] = pd.to_datetime(goldBitcoin["Date"])
+dateMask18 = (volatility2018["Date"] > "2018-01-01") & (volatility2018["Date"] <= "2018-12-31")
+volatility2018 = volatility2018.loc[dateMask18]
+print(volatility2018, dataSeperator)
 
 # 2019 volatility
+data19 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Change"]]
+header = ["Date","Gold Volatility 2019","Bitcoin Volatility 2019"]
+volatility2019 = pd.concat(data19,axis=1,keys=header)
+volatility2019["Date"] = pd.to_datetime(goldBitcoin["Date"])
+dateMask19 = (volatility2019["Date"] > "2019-01-01") & (volatility2019["Date"] <= "2019-12-31")
+volatility2019 = volatility2019.loc[dateMask19]
+print(volatility2019, dataSeperator)
 
-# 2020 volatility
+print(
+    "Max Gold Volatility 2018 :       ",volatility2018["Gold Volatility 2018"].max(),"\n"
+    "Average Gold Volatility 2018:   ",volatility2018["Gold Volatility 2018"].mean(),"\n","_"*30,"\n",
+    "Max Bitcoin Volatility 2018:    ",volatility2018["Bitcoin Volatility 2018"].max(),"\n"
+    "Average Bitcoin Volatility 2018: ",volatility2018["Bitcoin Volatility 2018"].mean(),dataSeperator
+
+
+)
 
 
