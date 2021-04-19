@@ -2,7 +2,9 @@
 # Cian Murray cian.murray@capspire.com
 # 15/04/2021
 # Datasets Urls:
-# https://www.kaggle.com/sudalairajkumar/cryptocurrencypricehistory
+# https://finance.yahoo.com/quote/BTC-USD/history/
+# https://finance.yahoo.com/quote/ETH-USD/history?period1=1514764800&period2=1546214400&interval=1mo&filter=history&
+    # frequency=1mo&includeAdjustedClose=true
 # https://datahub.io/core/gold-prices
 # camelCase will be used as a coding standard throughout.
 # numpy will be used for creating arrays and Algebra
@@ -14,7 +16,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import mplfinance as fplt
+
 
 
 colour = sns.color_palette()
@@ -157,7 +159,7 @@ date = goldBitcoin["Date"]
 gSp = goldBitcoin["Gold Settled Price"]
 btcSp = goldBitcoin["Bitcoin Settled Price"]
 
-# Gold  Plot
+# # Gold  Plot
 # plt.plot(date, gSp, color="black", linestyle="--", label="Gold")
 # plt.xlabel("Date")
 # # Bitcoin  Plot
@@ -210,7 +212,7 @@ data18 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Cha
 header = ["Date","Gold Volatility 2018","Bitcoin Volatility 2018"]
 volatility2018 = pd.concat(data18,axis=1,keys=header)
 volatility2018["Date"] = pd.to_datetime(goldBitcoin["Date"])
-dateMask18 = (volatility2018["Date"] > "2018-01-01") & (volatility2018["Date"] <= "2018-12-31")
+dateMask18 = (volatility2018["Date"] >= "2018-01-01") & (volatility2018["Date"] <= "2018-12-31")
 volatility2018 = volatility2018.loc[dateMask18]
 print(volatility2018, dataSeperator)
 
@@ -219,17 +221,80 @@ data19 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Cha
 header = ["Date","Gold Volatility 2019","Bitcoin Volatility 2019"]
 volatility2019 = pd.concat(data19,axis=1,keys=header)
 volatility2019["Date"] = pd.to_datetime(goldBitcoin["Date"])
-dateMask19 = (volatility2019["Date"] > "2019-01-01") & (volatility2019["Date"] <= "2019-12-31")
+dateMask19 = (volatility2019["Date"] >= "2019-01-01") & (volatility2019["Date"] <= "2019-12-31")
 volatility2019 = volatility2019.loc[dateMask19]
 print(volatility2019, dataSeperator)
 
 print(
-    "Max Gold Volatility 2018 :       ",volatility2018["Gold Volatility 2018"].max(),"\n"
-    "Average Gold Volatility 2018:   ",volatility2018["Gold Volatility 2018"].mean(),"\n","_"*30,"\n",
-    "Max Bitcoin Volatility 2018:    ",volatility2018["Bitcoin Volatility 2018"].max(),"\n"
-    "Average Bitcoin Volatility 2018: ",volatility2018["Bitcoin Volatility 2018"].mean(),dataSeperator
-
-
+    "                     2018 Volatility \n\n"
+    "Max Gold Volatility 2018 :         ",volatility2018["Gold Volatility 2018"].max(),"\n"
+    "Min Gold Volatility 2018 :         ",volatility2018["Gold Volatility 2018"].min(),"\n"                                                                                
+    "Average Gold Volatility 2018:      ",volatility2018["Gold Volatility 2018"].mean(),"\n"
+    "Max Bitcoin Volatility 2018:       ",volatility2018["Bitcoin Volatility 2018"].max(),"\n"
+    "Min Bitcoin Volatility 2018 :      ",volatility2018["Bitcoin Volatility 2018"].min(),"\n"
+    "Average Bitcoin Volatility 2018:   ",volatility2018["Bitcoin Volatility 2018"].mean(),"_"*30,"\n"
+    "                     2019 Volatility \n\n"
+    "Max Gold Volatility 2019 :       ",volatility2019["Gold Volatility 2019"].max(),"\n"
+    "Min Gold Volatility 2019 :       ",volatility2019["Gold Volatility 2019"].min(),"\n"                                                                                
+    "Average Gold Volatility 2019:    ",volatility2019["Gold Volatility 2019"].mean(),"\n"
+    "Max Bitcoin Volatility 2019:     ",volatility2019["Bitcoin Volatility 2019"].max(), "\n"
+    "Min Bitcoin Volatility 2019 :    ",volatility2019["Bitcoin Volatility 2019"].min(),"\n"      
+    "Average Bitcoin Volatility 2019: ",volatility2019["Bitcoin Volatility 2019"].mean(), "_" * 30, "\n",dataSeperator
 )
+# Plotting or Volatility
+date19 = volatility2019["Date"]
+gldVol19 = volatility2019["Gold Volatility 2019"]
+btcVol19 = volatility2019["Bitcoin Volatility 2019"]
+date18 = volatility2018["Date"]
+gldVol18 = volatility2018["Gold Volatility 2018"]
+btcVol18 = volatility2018["Bitcoin Volatility 2018"]
 
+# # 2018 plot
+# plt.plot(date18, gldVol18, color="black", linestyle="--", label="Gold")
+# plt.xlabel("Date")
+# plt.plot(date18, btcVol18, color="orange", linestyle="solid", label="Bitcoin")
+# plt.ylabel("Volatilty % of price")
+# plt.title("Gold & Bitcoin Price Volatility 2018", color="red")
+# plt.legend()
+# plt.show()
+# # 2019 Plot
+# plt.plot(date19, gldVol19, color="black", linestyle="--", label="Gold")
+# plt.xlabel("Date")
+# plt.plot(date19, btcVol19, color="orange", linestyle="solid", label="Bitcoin")
+# plt.ylabel("Volatility %  of price")
+# plt.title("Gold & Bitcoin Price Volatility 2019", color="red")
+# plt.legend()
+# plt.show()
+
+
+# Analysis 2:
+
+# Is there any other cryptocurrency that we can use instead of Bitcoin , Lets look at etherium
+
+
+# Taking the Monthly aggregated data from yahoo finance, we will create a dict to store our 2018 etherium data
+etherData18 = \
+    {
+        "Date": ["2018-01-01", "2018-02-01", "2018-03-01", "2018-04-01", "2018-05-01", "2018-06-01", "2018-07-01",
+                 "2018-08-01", "2018-09-01", "2018-10-01", "2018-11-01", "2018-12-01"],
+        "Name": ["Etherium","Etherium","Etherium","Etherium","Etherium","Etherium","Etherium","Etherium",
+                 "Etherium","Etherium","Etherium","Etherium"],
+        "Etherium Settlement" : [775.76, 1119.37, 856.01, 397.25, 670.46, 578.67, 455.24, 433.87, 283.50, 233.22, 197.54, 113.40]
+}
+# Convert our Dict to a df
+ether18 = pd.DataFrame(data=etherData18)
+print(ether18, dataSeperator)
+
+# Taking the Monthly aggregated data from yahoo finance, we will create a list to store our 2019 etherium data
+
+etherData19 = [["2019-01-01",133.42,"Etherium"],["2019-02-01",107.15,"Etherium"],["2019-03-01",136.84,"Etherium"],
+               ["2019-04-01",141.47,"Etherium"],["2019-05-01",162.19,"Etherium"],["2019-06-01",268.43,"Etherium"],
+               ["2019-07-01",290.27,"Etherium"],["2019-08-01",218.55,"Etherium"],["2019-09-01",172.46,"Etherium"],
+               ["2019-10-01",180.21,"Etherium"],["2019-11-01",183.80,"Etherium"],["2019-12-01",152.49,"Etherium"]]
+columns = ["Date","Etherium Settlement","Name"]
+ether19 = pd.DataFrame(data=etherData19, columns=columns)
+# Rearrange the columns
+ether19 = ether19[["Date", "Name", "Etherium Settlement"]]
+
+print(ether19, dataSeperator)
 
