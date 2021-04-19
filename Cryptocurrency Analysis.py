@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import mplfinance as fplt
+
 
 colour = sns.color_palette()
 
@@ -172,19 +174,40 @@ goldBitcoin.insert(5, "GLD % Change", "")
 goldBitcoin.insert(6, "BTC % Change", "")
 print(goldBitcoin.head(), dataSeperator)
 
+goldBitcoin["GLD % Change"] = \
+    (goldBitcoin["Gold Settled Price"].diff()*100)/goldBitcoin["Gold Settled Price"].shift()
+goldBitcoin["BTC % Change"] = \
+    (goldBitcoin["Bitcoin Settled Price"].diff()*100)/goldBitcoin["Bitcoin Settled Price"]\
+    .shift()
 
-# # What date did bitcoin overtake gold
-# bitSp = goldBitcoin["Bitcoin Settled Price"]
-# gldSp = goldBitcoin["Gold Settled Price"]
-# for index, row in goldBitcoin.iterrows():
-#     if bitSp > gldSp:
-#         print(row)
-#
-# # bitSp = goldBitcoin["Bitcoin Settled Price"]
-# # gldSp = goldBitcoin["Gold Settled Price"]
-# # while True:
-# #     bitSp < gldSp
-# #     if bitSp < gldSp:
-# #         print("True")
 
-# how many days did it take bitcoin to overtake gold
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    print(goldBitcoin, dataSeperator)
+
+# Replace NaN with 0 as it is the first value and will be zero
+goldBitcoin["GLD % Change"] = goldBitcoin["GLD % Change"].fillna(0)
+goldBitcoin["BTC % Change"] = goldBitcoin["BTC % Change"].fillna(0)
+
+
+# Get the Maximum Volatility for Bitcoin
+bitCoinVolatility = goldBitcoin["BTC % Change"].max()
+
+# Get the Maximum volatility for Gold
+goldVolatility = goldBitcoin["GLD % Change"].max()
+
+# Average volatility for Bitcoin
+bitCoinVolatilityMean = goldBitcoin["BTC % Change"].mean()
+
+# Average volatility for Gold
+goldVolatilityMean = goldBitcoin["GLD % Change"].mean()
+
+# Volatility Summary
+print("Bitcoin Max Volatility: ", bitCoinVolatility, "\nBitcoin Average Volatility : ", bitCoinVolatilityMean)
+print("Gold Max Volatility: ", goldVolatility, "\nBitcoin Average Volatility: ", goldVolatilityMean, dataSeperator)
+
+
+# 2019 volatility
+
+# 2020 volatility
+
+
