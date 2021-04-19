@@ -3,8 +3,7 @@
 # 15/04/2021
 # Datasets Urls:
 # https://finance.yahoo.com/quote/BTC-USD/history/
-# https://finance.yahoo.com/quote/ETH-USD/history?period1=1514764800&period2=1546214400&interval=1mo&filter=history&
-    # frequency=1mo&includeAdjustedClose=true
+# https://finance.yahoo.com/quote/ETH-USD/history/
 # https://datahub.io/core/gold-prices
 # camelCase will be used as a coding standard throughout.
 # numpy will be used for creating arrays and Algebra
@@ -80,7 +79,6 @@ print(null_loc(cryptoDf), dataSeperator)
 cryptoDf = cryptoDf.drop(labels=79, axis=0)
 print(null_loc(cryptoDf), dataSeperator)
 
-
 # In commodity Trading we refer to the closing price as the settlement price for several reasons.
 # I will rename the price column to this as it will be easier for colleagues to follow the data.
 goldDf.rename(columns={'Price': 'Settlement'}, inplace=True)
@@ -91,7 +89,6 @@ print(cryptoDf.info())
 print(cryptoDf.shape)
 print(cryptoDf.describe())
 print(cryptoDf.columns, dataSeperator)
-
 
 # Double check null values
 nullValues2 = cryptoDf.isna().sum().sum()
@@ -123,9 +120,9 @@ print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD, "
       dataSeperator)
 
 # Create Scatter Plots to check for Data outliers
-cryptoDf.plot(x="Date",y="Settlement", kind="scatter",title="Bitcoin Outliers")
+cryptoDf.plot(x="Date", y="Settlement", kind="scatter", title="Bitcoin Outliers")
 plt.show()
-goldDf.plot(x="Date",y="Settlement", kind="scatter",title="Gold Outliers")
+goldDf.plot(x="Date", y="Settlement", kind="scatter", title="Gold Outliers")
 plt.show()
 
 # Join our two dataframes with an inner join Date will be our PK
@@ -155,7 +152,7 @@ goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2018-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
 
-#  Secondly I wish to look at price volatility over the last 5 years
+#  Secondly I wish to look at price volatility over the last 4 years
 goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2016-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
@@ -183,11 +180,9 @@ goldBitcoin.insert(6, "BTC % Change", "")
 print(goldBitcoin.head(), dataSeperator)
 
 goldBitcoin["GLD % Change"] = \
-    (goldBitcoin["Gold Settled Price"].diff()*100)/goldBitcoin["Gold Settled Price"].shift()
+    (goldBitcoin["Gold Settled Price"].diff() * 100) / goldBitcoin["Gold Settled Price"].shift()
 goldBitcoin["BTC % Change"] = \
-    (goldBitcoin["Bitcoin Settled Price"].diff()*100)/goldBitcoin["Bitcoin Settled Price"]\
-    .shift()
-
+    (goldBitcoin["Bitcoin Settled Price"].diff() * 100) / goldBitcoin["Bitcoin Settled Price"].shift()
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):
     print(goldBitcoin, dataSeperator)
@@ -195,7 +190,6 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 # Replace NaN with 0 as it is the first value and will be zero
 goldBitcoin["GLD % Change"] = goldBitcoin["GLD % Change"].fillna(0)
 goldBitcoin["BTC % Change"] = goldBitcoin["BTC % Change"].fillna(0)
-
 
 # Get the Maximum Volatility for Bitcoin
 bitCoinVolatility = goldBitcoin["BTC % Change"].max()
@@ -214,18 +208,18 @@ print("Bitcoin Max Volatility: ", bitCoinVolatility, "\nBitcoin Average Volatili
 print("Gold Max Volatility: ", goldVolatility, "\nBitcoin Average Volatility: ", goldVolatilityMean, dataSeperator)
 
 # 2018 volatility
-data18 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Change"]]
-header = ["Date","Gold Volatility 2018","Bitcoin Volatility 2018"]
-volatility2018 = pd.concat(data18,axis=1,keys=header)
+data18 = [goldBitcoin["Date"], goldBitcoin["GLD % Change"], goldBitcoin["BTC % Change"]]
+header = ["Date", "Gold Volatility 2018", "Bitcoin Volatility 2018"]
+volatility2018 = pd.concat(data18, axis=1, keys=header)
 volatility2018["Date"] = pd.to_datetime(goldBitcoin["Date"])
 dateMask18 = (volatility2018["Date"] >= "2018-01-01") & (volatility2018["Date"] <= "2018-12-31")
 volatility2018 = volatility2018.loc[dateMask18]
 print(volatility2018, dataSeperator)
 
 # 2019 volatility
-data19 = [goldBitcoin["Date"],goldBitcoin["GLD % Change"],goldBitcoin["BTC % Change"]]
-header = ["Date","Gold Volatility 2019","Bitcoin Volatility 2019"]
-volatility2019 = pd.concat(data19,axis=1,keys=header)
+data19 = [goldBitcoin["Date"], goldBitcoin["GLD % Change"], goldBitcoin["BTC % Change"]]
+header = ["Date", "Gold Volatility 2019", "Bitcoin Volatility 2019"]
+volatility2019 = pd.concat(data19, axis=1, keys=header)
 volatility2019["Date"] = pd.to_datetime(goldBitcoin["Date"])
 dateMask19 = (volatility2019["Date"] >= "2019-01-01") & (volatility2019["Date"] <= "2019-12-31")
 volatility2019 = volatility2019.loc[dateMask19]
@@ -233,19 +227,20 @@ print(volatility2019, dataSeperator)
 
 print(
     "                     2018 Volatility \n\n"
-    "Max Gold Volatility 2018 :         ",volatility2018["Gold Volatility 2018"].max(),"\n"
-    "Min Gold Volatility 2018 :         ",volatility2018["Gold Volatility 2018"].min(),"\n"                                                                                
-    "Average Gold Volatility 2018:      ",volatility2018["Gold Volatility 2018"].mean(),"\n"
-    "Max Bitcoin Volatility 2018:       ",volatility2018["Bitcoin Volatility 2018"].max(),"\n"
-    "Min Bitcoin Volatility 2018 :      ",volatility2018["Bitcoin Volatility 2018"].min(),"\n"
-    "Average Bitcoin Volatility 2018:   ",volatility2018["Bitcoin Volatility 2018"].mean(),"_"*30,"\n"
+    "Max Gold Volatility 2018 :         ", volatility2018["Gold Volatility 2018"].max(), "\n"
+    "Min Gold Volatility 2018 :         ", volatility2018["Gold Volatility 2018"].min(), "\n"
+    "Average Gold Volatility 2018:      ", volatility2018["Gold Volatility 2018"].mean(), "\n"
+    "Max Bitcoin Volatility 2018:       ", volatility2018["Bitcoin Volatility 2018"].max(), "\n"
+    "Min Bitcoin Volatility 2018 :      ", volatility2018["Bitcoin Volatility 2018"].min(), "\n"
+    "Average Bitcoin Volatility 2018:   ", volatility2018["Bitcoin Volatility 2018"].mean(), "\n", "_" * 57, "\n"
     "                     2019 Volatility \n\n"
-    "Max Gold Volatility 2019 :       ",volatility2019["Gold Volatility 2019"].max(),"\n"
-    "Min Gold Volatility 2019 :       ",volatility2019["Gold Volatility 2019"].min(),"\n"                                                                                
-    "Average Gold Volatility 2019:    ",volatility2019["Gold Volatility 2019"].mean(),"\n"
-    "Max Bitcoin Volatility 2019:     ",volatility2019["Bitcoin Volatility 2019"].max(), "\n"
-    "Min Bitcoin Volatility 2019 :    ",volatility2019["Bitcoin Volatility 2019"].min(),"\n"      
-    "Average Bitcoin Volatility 2019: ",volatility2019["Bitcoin Volatility 2019"].mean(), "_" * 30, "\n",dataSeperator
+    "Max Gold Volatility 2019 :       ", volatility2019["Gold Volatility 2019"].max(), "\n"
+    "Min Gold Volatility 2019 :       ", volatility2019["Gold Volatility 2019"].min(), "\n"
+    "Average Gold Volatility 2019:    ", volatility2019["Gold Volatility 2019"].mean(), "\n"
+    "Max Bitcoin Volatility 2019:     ", volatility2019["Bitcoin Volatility 2019"].max(), "\n"
+    "Min Bitcoin Volatility 2019 :    ", volatility2019["Bitcoin Volatility 2019"].min(), "\n"
+    "Average Bitcoin Volatility 2019: ", volatility2019["Bitcoin Volatility 2019"].mean(), "\n", "_" * 57,
+    "\n", dataSeperator
 )
 # Plotting or Volatility
 date19 = volatility2019["Date"]
@@ -259,7 +254,7 @@ btcVol18 = volatility2018["Bitcoin Volatility 2018"]
 plt.plot(date18, gldVol18, color="black", linestyle="--", label="Gold")
 plt.xlabel("Date")
 plt.plot(date18, btcVol18, color="orange", linestyle="solid", label="Bitcoin")
-plt.ylabel("Volatilty % of price")
+plt.ylabel("Volatility % of price")
 plt.title("Gold & Bitcoin Price Volatility 2018", color="red")
 plt.legend()
 plt.show()
@@ -272,7 +267,6 @@ plt.title("Gold & Bitcoin Price Volatility 2019", color="red")
 plt.legend()
 plt.show()
 
-
 # Analysis 2:
 
 # Is there any other cryptocurrency that we can use instead of Bitcoin , Lets look at etherium
@@ -283,21 +277,23 @@ etherData18 = \
     {
         "Date": ["2018-01-01", "2018-02-01", "2018-03-01", "2018-04-01", "2018-05-01", "2018-06-01", "2018-07-01",
                  "2018-08-01", "2018-09-01", "2018-10-01", "2018-11-01", "2018-12-01"],
-        "Name": ["Etherium","Etherium","Etherium","Etherium","Etherium","Etherium","Etherium","Etherium",
-                 "Etherium","Etherium","Etherium","Etherium"],
-        "Etherium Settlement" : [775.76, 1119.37, 856.01, 397.25, 670.46, 578.67, 455.24, 433.87, 283.50, 233.22, 197.54, 113.40]
-}
+        "Name": ["Etherium", "Etherium", "Etherium", "Etherium", "Etherium", "Etherium", "Etherium", "Etherium",
+                 "Etherium", "Etherium", "Etherium", "Etherium"],
+        "Etherium Settlement": [775.76, 1119.37, 856.01, 397.25, 670.46, 578.67, 455.24, 433.87, 283.50, 233.22, 197.54,
+                                113.40]
+    }
 # Convert our Dict to a df
 ether18 = pd.DataFrame(data=etherData18)
 print(ether18, dataSeperator)
 
 # Taking the Monthly aggregated data from yahoo finance, we will create a list to store our 2019 etherium data
 
-etherData19 = [["2019-01-01",133.42,"Etherium"],["2019-02-01",107.15,"Etherium"],["2019-03-01",136.84,"Etherium"],
-               ["2019-04-01",141.47,"Etherium"],["2019-05-01",162.19,"Etherium"],["2019-06-01",268.43,"Etherium"],
-               ["2019-07-01",290.27,"Etherium"],["2019-08-01",218.55,"Etherium"],["2019-09-01",172.46,"Etherium"],
-               ["2019-10-01",180.21,"Etherium"],["2019-11-01",183.80,"Etherium"],["2019-12-01",152.49,"Etherium"]]
-columns = ["Date","Etherium Settlement","Name"]
+etherData19 = \
+    [["2019-01-01", 133.42, "Etherium"], ["2019-02-01", 107.15, "Etherium"], ["2019-03-01", 136.84, "Etherium"],
+     ["2019-04-01", 141.47, "Etherium"], ["2019-05-01", 162.19, "Etherium"], ["2019-06-01", 268.43, "Etherium"],
+     ["2019-07-01", 290.27, "Etherium"], ["2019-08-01", 218.55, "Etherium"], ["2019-09-01", 172.46, "Etherium"],
+     ["2019-10-01", 180.21, "Etherium"], ["2019-11-01", 183.80, "Etherium"], ["2019-12-01", 152.49, "Etherium"]]
+columns = ["Date", "Etherium Settlement", "Name"]
 ether19 = pd.DataFrame(data=etherData19, columns=columns)
 # Rearrange the columns
 ether19 = ether19[["Date", "Name", "Etherium Settlement"]]
@@ -309,58 +305,55 @@ print(null_loc(ether19), dataSeperator)
 # Get Etherium Volatility by year
 ether18.insert(3, "ETH % Change", "")
 ether18["ETH % Change"] = \
-    (ether18["Etherium Settlement"].diff()*100)/ether18["Etherium Settlement"]\
-    .shift()
+    (ether18["Etherium Settlement"].diff() * 100) / ether18["Etherium Settlement"].shift()
 ether18["ETH % Change"] = ether18["ETH % Change"].fillna(0)
 print(ether18, dataSeperator)
 ether19.insert(3, "ETH % Change", "")
 ether19["ETH % Change"] = \
-    (ether19["Etherium Settlement"].diff()*100)/ether19["Etherium Settlement"]\
-    .shift()
+    (ether19["Etherium Settlement"].diff() * 100) / ether19["Etherium Settlement"].shift()
 ether19["ETH % Change"] = ether19["ETH % Change"].fillna(0)
 print(ether19, dataSeperator)
 
 # What Months have had negative change in 2019
 for index, row in ether19.iterrows():
     if row["ETH % Change"] < 0:
-        print("Date: ",row["Date"],"\n""Settlement: ",row["Etherium Settlement"], "   ",
-                "\n% Change from Previous day: ",colourRed,row["ETH % Change"], revertColour,"\n","_" * 30, "\n")
+        print("Date: ", row["Date"], "\n""Settlement: ", row["Etherium Settlement"], "   ",
+              "\n% Change from Previous day: ", colourRed, row["ETH % Change"], revertColour, "\n", "_" * 30, "\n")
     elif row["ETH % Change"] >= 0:
         print("Date: ", row["Date"], "\n""Settlement: ", row["Etherium Settlement"], "   ",
               "\n% Change from Previous day: ", colourGreen, row["ETH % Change"], revertColour, "\n", "_" * 30, "\n")
 print(dataSeperator)
 
-print(ether18.info(),"\n",ether19.info(),dataSeperator)
+print(ether18.info(), "\n", ether19.info(), dataSeperator)
 ether18["Date"] = pd.to_datetime(ether18["Date"])
 ether19["Date"] = pd.to_datetime(ether19["Date"])
 
-print(ether18.info(),"\n",ether19.info(),dataSeperator)
-
+print(ether18.info(), "\n", ether19.info(), dataSeperator)
 
 # Visualise our GoldBitcoin Data in a easy to follow format like Etherium
 # I wish to look at these individually so i will separate the loop below
-# I also wish to hav an indepth look at the entire data frame rather that the date sliced df
-print(boldText,"Gold Volatility Index \n\n","_" * 30, "\n",revertColour)
+# I also wish to hav an in-depth look at the entire data frame rather that the date sliced df
+print(boldText, "Gold Volatility Index \n\n", "_" * 30, "\n", revertColour)
 for index, row in goldBitcoin.iterrows():
     if row["GLD % Change"] < 0:
-        print("Date:  ", boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""Gold % Change: ", "   ",
-                "\n% Change from Previous day: ",colourRed,row["GLD % Change"], revertColour,"\n")
+        print("Date:  ", boldText, row["Date"].strftime("%Y %b %d"), revertColour, "\n""Gold % Change: ", "   ",
+              "\n% Change from Previous day: ", colourRed, row["GLD % Change"], revertColour, "\n")
     elif row["GLD % Change"] >= 0:
-        print("Date:  ",boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""Gold % Change: ", "   ",
+        print("Date:  ", boldText, row["Date"].strftime("%Y %b %d"), revertColour, "\n""Gold % Change: ", "   ",
               "\n% Change from Previous day: ", colourGreen, row["GLD % Change"], revertColour, "\n")
 print(dataSeperator)
-print(boldText,"Bitcoin Volatility Index \n\n","_" * 30, "\n",revertColour)
+print(boldText, "Bitcoin Volatility Index \n\n", "_" * 30, "\n", revertColour)
 for index, row in goldBitcoin.iterrows():
     if row["BTC % Change"] < 0:
-        print("Date:  ", boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""BTC % Change: ", "   ",
-                "\n% Change from Previous day: ",colourRed,row["BTC % Change"], revertColour,"\n")
+        print("Date:  ", boldText, row["Date"].strftime("%Y %b %d"), revertColour, "\n""BTC % Change: ", "   ",
+              "\n% Change from Previous day: ", colourRed, row["BTC % Change"], revertColour, "\n")
     elif row["BTC % Change"] >= 0:
-        print("Date: ",boldText, row["Date"].strftime("%Y %b %d"),revertColour,"\n""BTC % Change: ", "   ",
+        print("Date: ", boldText, row["Date"].strftime("%Y %b %d"), revertColour, "\n""BTC % Change: ", "   ",
               "\n% Change from Previous day: ", colourGreen, row["BTC % Change"], revertColour, "\n")
 print(dataSeperator)
 
 # Join etherium dataframes
 # join btc/gold volatility onto etherium volatility
 # present a graph on volatility with all 3 values
-# candlestick graphs on all 4 volatilities
+# candlestick graphs on all 4 volatility's
 # numpy
