@@ -5,16 +5,16 @@
 # https://finance.yahoo.com/quote/BTC-USD/history/
 # https://finance.yahoo.com/quote/ETH-USD/history/
 # https://datahub.io/core/gold-prices
+# https://awesomeopensource.com/project/dhaitz/mplcyberpunk
 # camelCase will be used as a coding standard throughout.
-# numpy will be used for creating arrays and Algebra
 # pandas to be used for importing of data and data manipulation.
-# matplotlib and seaborn to be used for data visualisation
-
+# matplotlib and/or seaborn to be used for data visualisation
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import mplcyberpunk
 
 colour = sns.color_palette()
 
@@ -69,13 +69,12 @@ print("There are: ", nullValues2, " Null values in the crypto Dataset", dataSepe
 
 
 # Create a Function to check dataframes easily for  null values
-
 def null_loc(df): return df[df.isna().any(axis=1)]
 
 
 # look at our null values
 print(null_loc(cryptoDf), dataSeperator)
-# As we only have one row to delete with no data we can simply drp it.
+# As we only have one row to delete with no data we can simply drop it.
 cryptoDf = cryptoDf.drop(labels=79, axis=0)
 print(null_loc(cryptoDf), dataSeperator)
 
@@ -85,9 +84,9 @@ goldDf.rename(columns={'Price': 'Settlement'}, inplace=True)
 print(goldDf.head(), dataSeperator)
 
 # Inspect the crypto dataframe
-print(cryptoDf.info())
-print(cryptoDf.shape)
-print(cryptoDf.describe())
+print(cryptoDf.info(), dataSeperator)
+print(cryptoDf.shape, dataSeperator)
+print(cryptoDf.describe(), dataSeperator)
 print(cryptoDf.columns, dataSeperator)
 
 # Double check null values
@@ -120,9 +119,12 @@ print("Gold Maximum Date: ", goldMaxD, " Bitcoin Maximum Date: ", bitCoinMaxD, "
       dataSeperator)
 
 # Create Scatter Plots to check for Data outliers
-cryptoDf.plot(x="Date", y="Settlement", kind="scatter", title="Bitcoin Outliers")
+plt.style.use("cyberpunk")
+cryptoDf.plot(x="Date", y="Settlement", kind="scatter", title="Bitcoin Outliers CM-UCD")
+mplcyberpunk.add_glow_effects()
 plt.show()
-goldDf.plot(x="Date", y="Settlement", kind="scatter", title="Gold Outliers")
+goldDf.plot(x="Date", y="Settlement", kind="scatter", title="Gold Outliers CM-UCD")
+mplcyberpunk.add_glow_effects()
 plt.show()
 
 # Join our two dataframes with an inner join Date will be our PK
@@ -150,6 +152,7 @@ print("There are: ", nullValues3, " Null values in the Gold/Bitcoin Dataset", da
 
 #  First I wish to look at price volatility over the last 2 years
 # 2020-01-01 is the Max date range I wish to use as I am only interested in Pre covid volatility.
+# Range Mask will be used as I do not wish to save the date range to a new df just yet, just observe the data
 goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2018-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
@@ -159,19 +162,22 @@ goldBitcoin["Date"] = pd.to_datetime(goldBitcoin["Date"])
 rangeMask = (goldBitcoin["Date"] > "2016-01-01") & (goldBitcoin["Date"] <= "2020-01-01")
 print(goldBitcoin.loc[rangeMask])
 
+# Plot the goldBitcoinDf for full date range
 # Variables used for plotting
 date = goldBitcoin["Date"]
 gSp = goldBitcoin["Gold Settled Price"]
 btcSp = goldBitcoin["Bitcoin Settled Price"]
 
 # Gold  Plot
-plt.plot(date, gSp, color="black", linestyle="--", label="Gold")
+plt.style.use("cyberpunk")
+plt.plot(date, gSp,  linestyle="--", label="Gold")
 plt.xlabel("Date")
 # Bitcoin  Plot
-plt.plot(date, btcSp, color="orange", linestyle="solid", label="Bitcoin")
+plt.plot(date, btcSp,  linestyle="solid", label="Bitcoin")
 plt.ylabel("Settlement Price $")
-plt.title("Historical Bitcoin & Gold Prices", color="red")
+plt.title("Historical Bitcoin & Gold Prices CM-UCD")
 plt.legend()
+mplcyberpunk.add_glow_effects()
 plt.show()
 
 # Analysis 1
@@ -207,8 +213,9 @@ goldVolatilityMean = goldBitcoin["GLD % Change"].mean()
 
 # Volatility Summary Overall from Df
 print("Bitcoin Max Volatility: ", bitCoinVolatility, "\nBitcoin Average Volatility : ", bitCoinVolatilityMean)
-print("Gold Max Volatility: ", goldVolatility, "\nBitcoin Average Volatility: ", goldVolatilityMean, dataSeperator)
+print("Gold Max Volatility: ", goldVolatility, "\nGold Average Volatility: ", goldVolatilityMean, dataSeperator)
 
+# We will look at volatility's by year as opposed to the whole dataframe
 # 2018 volatility
 data18 = [goldBitcoin["Date"], goldBitcoin["GLD % Change"], goldBitcoin["BTC % Change"]]
 header = ["Date", "Gold Volatility 2018", "Bitcoin Volatility 2018"]
@@ -252,28 +259,30 @@ date18 = volatility2018["Date"]
 gldVol18 = volatility2018["Gold Volatility 2018"]
 btcVol18 = volatility2018["Bitcoin Volatility 2018"]
 
-# 2018 plot
-plt.plot(date18, gldVol18, color="black", linestyle="--", label="Gold")
+# # 2018 plot
+plt.style.use("cyberpunk")
+plt.plot(date18, gldVol18,  linestyle="--", label="Gold")
 plt.xlabel("Date")
-plt.plot(date18, btcVol18, color="orange", linestyle="solid", label="Bitcoin")
+plt.plot(date18, btcVol18, linestyle="solid", label="Bitcoin")
 plt.ylabel("Volatility % of price")
-plt.title("Gold & Bitcoin Price Volatility 2018", color="red")
+plt.title("Gold & Bitcoin Price Volatility 2018 CM-UCD")
 plt.legend()
+mplcyberpunk.add_glow_effects()
 plt.show()
 # 2019 Plot
-plt.plot(date19, gldVol19, color="black", linestyle="--", label="Gold")
+plt.style.use("cyberpunk")
+plt.plot(date19, gldVol19, linestyle="--", label="Gold")
 plt.xlabel("Date")
-plt.plot(date19, btcVol19, color="orange", linestyle="solid", label="Bitcoin")
+plt.plot(date19, btcVol19, linestyle="solid", label="Bitcoin")
 plt.ylabel("Volatility %  of price")
-plt.title("Gold & Bitcoin Price Volatility 2019", color="red")
+plt.title("Gold & Bitcoin Price Volatility 2019 CM-UCD")
 plt.legend()
+mplcyberpunk.add_glow_effects()
 plt.show()
 
 # Analysis 2:
 
-# Is there any other cryptocurrency that we can use instead of Bitcoin , Lets look at etherium
-
-
+# Is there any other cryptocurrency that we can use instead of Bitcoin , Lets look at Etherium
 # Taking the Monthly aggregated data from yahoo finance, we will create a dict to store our 2018 etherium data
 etherData18 = \
     {
@@ -289,7 +298,6 @@ ether18 = pd.DataFrame(data=etherData18)
 print(ether18, dataSeperator)
 
 # Taking the Monthly aggregated data from yahoo finance, we will create a list to store our 2019 etherium data
-
 etherData19 = \
     [["2019-01-01", 133.42, "Etherium"], ["2019-02-01", 107.15, "Etherium"], ["2019-03-01", 136.84, "Etherium"],
      ["2019-04-01", 141.47, "Etherium"], ["2019-05-01", 162.19, "Etherium"], ["2019-06-01", 268.43, "Etherium"],
@@ -301,6 +309,7 @@ ether19 = pd.DataFrame(data=etherData19, columns=columns)
 ether19 = ether19[["Date", "Name", "Etherium Settlement"]]
 
 print(ether19, dataSeperator)
+# Check for null values using our function
 print(null_loc(ether18), dataSeperator)
 print(null_loc(ether19), dataSeperator)
 
@@ -316,7 +325,7 @@ ether19["ETH % Change"] = \
 ether19["ETH % Change"] = ether19["ETH % Change"].fillna(0)
 print(ether19, dataSeperator)
 
-# What Months have had negative change in 2019
+# What Months have had negative change in 2019, visualise for analysis
 for index, row in ether19.iterrows():
     if row["ETH % Change"] < 0:
         print("Date: ", row["Date"], "\n""Settlement: ", row["Etherium Settlement"], "   ",
@@ -356,31 +365,37 @@ print(dataSeperator)
 
 
 # Create Scatter Plots to check for Data outliers
-ether18.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2018 Outliers")
-plt.show()
-ether19.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2019 Outliers")
+plt.style.use("cyberpunk")
+
+ether18.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2018 Outliers CM-UCD")
+mplcyberpunk.add_glow_effects()
 plt.show()
 
-# Gold Etherium volatility 2018
-etheriumDate18 = ether18["Date"]
-etherVol18 = ether18["ETH % Change"]
-plt.plot(etheriumDate18, etherVol18, color="gold", linestyle="solid", label="Gold")
-plt.xlabel("Date")
-plt.plot(etheriumDate18, gldVol18, color="blue", linestyle="solid", label="Etherium")
-plt.ylabel("Volatility % of price")
-plt.title("Etherium Price Volatility 2018", color="red")
-plt.legend()
+ether19.plot(x="Date", y="Etherium Settlement", kind="scatter", title="Etherium 2019 Outliers CM-UCD")
+mplcyberpunk.add_glow_effects()
 plt.show()
+
 
 # Gold Etherium volatility 2019
+# Variables for Graph
 etheriumDate19 = ether19["Date"]
+etheriumDate18 = ether18["Date"]
 etherVol19 = ether19["ETH % Change"]
-plt.plot(etheriumDate19, etherVol19, color="gold", linestyle="solid", label="Gold")
+etherVol18 = ether18["ETH % Change"]
+plt.style.use("cyberpunk")
+plt.plot(etheriumDate18, etherVol18, linestyle="solid", label="Etherium Volatility 2018", marker='o')
+plt.plot(etheriumDate18, gldVol18, linestyle="solid", label="Gold Volatility 2018", marker='o')
+plt.plot(etheriumDate19, etherVol19, linestyle="solid", label="Etherium Volatility 2019", marker='o')
+plt.plot(etheriumDate19, gldVol19, linestyle="solid", label="Gold Volatility 2019", marker='o')
+plt.title("Etherium / Gold Price Volatility 2018 | 2019 -CM/UCD")
 plt.xlabel("Date")
-plt.plot(etheriumDate19, gldVol19, color="blue", linestyle="solid", label="Etherium")
-plt.ylabel("Volatility % of price")
-plt.title("Etherium Price Volatility 2019", color="red")
+plt.ylabel("Volatility By Month")
 plt.legend()
-plt.show()
-# candlestick graphs on all 4 volatility's
+mplcyberpunk.add_glow_effects()
 
+plt.show()
+
+# Create an array from goldBitcoinDf amd transpose for future calculations:
+gBtc_array = np.array(goldBitcoin)
+gBtc_array = np.transpose(gBtc_array)
+print(gBtc_array[:10])
